@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Control LCD Firebase - Tiempo Real</title>
+<style>
+body { 
+    background:#202124; 
+    color:white; 
+    font-family:Arial; 
+    text-align:center; 
+    padding:20px; 
+}
+.box { 
+    background:#303134; 
+    padding:20px; 
+    border-radius:10px; 
+    width:400px; 
+    margin:auto; 
+}
+input, button { 
+    margin:8px; 
+    padding:10px; 
+    border-radius:6px; 
+    border:none; 
+    width: 300px;
+}
+button { 
+    background:#4285F4; 
+    color:white; 
+    cursor:pointer; 
+    width:140px; 
+}
+button:hover { 
+    background:#3367D6; 
+}
+#lcdPreview {
+    margin-top:20px;
+    background:#202124;
+    border:1px solid #555;
+    padding:10px;
+    font-family:monospace;
+    font-size:18px;
+    height:50px;
+}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Enviar mensaje a LCD</h2>
+<input id="linea1" placeholder="Linea 1"><br>
+<input id="linea2" placeholder="Linea 2"><br>
+<button onclick="enviar()">Enviar</button>
+
+<div id="lcdPreview">
+  <span id="preview1"></span><br>
+  <span id="preview2"></span>
+</div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAcuhWnS4zAA7-ZxD2oyNtwPup83ZCGdJs",
+  authDomain: "proyecto-prron-db6bd.firebaseapp.com",
+  databaseURL: "https://proyecto-prron-db6bd-default-rtdb.firebaseio.com",
+  projectId: "proyecto-prron-db6bd",
+  storageBucket: "proyecto-prron-db6bd.firebasestorage.app",
+  messagingSenderId: "803737172218",
+  appId: "1:803737172218:web:6cb2838b00986f5b8db143",
+  measurementId: "G-K1HXSXRTYG"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function enviar(){
+  let l1 = document.getElementById('linea1').value;
+  let l2 = document.getElementById('linea2').value;
+  db.ref('/lcd').set({ linea1: l1, linea2: l2 });
+  document.getElementById('linea1').value = '';
+  document.getElementById('linea2').value = '';
+}
+
+// Escuchar cambios en tiempo real
+db.ref('/lcd').on('value', (snapshot) => {
+  const data = snapshot.val();
+  if(data){
+    document.getElementById('preview1').textContent = data.linea1 || '';
+    document.getElementById('preview2').textContent = data.linea2 || '';
+  }
+});
+</script>
+</body>
+</html>
